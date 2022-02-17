@@ -1,0 +1,41 @@
+version: 2.1
+
+jobs:
+  deploy:
+    docker:
+      - image: cimg/python:3.7-node
+    steps:
+      - checkout
+      - run:
+          name: Installing deployment dependencies
+          working_directory: /
+          command: |
+            sudo apt-get -y -qq update
+            sudo apt-get install python3-pip python-dev build-essential
+            sudo pip3 install --upgrade setuptools
+            sudo pip3 install awsebcli --upgrade
+      - run:
+          name: Configure AWS eb cli
+          command: ./setupAwsConfig.sh
+      - run:
+          name: Deploying
+          command: eb deploy --timeout 25
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - hold:
+          type: approval
+          filters:
+            branches:
+              only:
+                - master
+      - deploy:
+          context: aws
+          requires:
+            - hold
+          filters:
+            branches:
+              only:
+                - master
