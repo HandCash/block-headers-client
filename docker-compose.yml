@@ -21,6 +21,7 @@ services:
       - _JAVA_OPTIONS=-XX:+UseContainerSupport -XX:MaxRAMPercentage=25 -Dlogging.level.ROOT=TRACE
     ports:
       - "443:8080"
+      - "80:8080"
 
 volumes:
   headersv-data:
